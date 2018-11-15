@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Macro Organism </title>
+    <meta charset="utf-8"/>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="./libs/three.js"></script>
+    <script src="./libs/dat.gui.js"></script>
+    <script src="./libs/stats.js"></script>
+</head>
+    <div id="WebGL-output"></div>
+    <div id="Stats-output"></div>
+
+    <script src="Origin.js"></script>
+    <script src="Country.js"></script>
+    <script src="Human.js"></script>
+    <script src="Util.js"></script>
+
+
+    <script type="text/javascript">
+
+        let camera;
+        let scene;
+        let renderer;
+
+        let HUMANS = {};
+        function init () {
+            let stats = initStats();
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x222222);
+
+            let earthGeometry = new THREE.SphereGeometry(30, 32, 24);
+            let earthMaterial = new THREE.MeshLambertMaterial({
+                color: 0x999999,
+                wireframe: true
+            });
+            let earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            earth.name = "earth";
+            earth["radius"] = 30;
+            scene.add(earth);
+
+            camera.position.set(-30, 40, 30);
+            camera.lookAt(scene.position);
+            scene.add(camera);
+
+            let controls = new function () {
+                this.rotationSpeed = 0.02;
+                this.scale = 0.03;
+                this.numberOfObjects = scene.children.length;
+                this.population = earth.children.length;
+            };
+
+            let gui = new dat.GUI();
+            gui.add(controls, 'rotationSpeed', -0.5, 0.5);
+            gui.add(controls, 'scale', 0, 1);
+            gui.add(controls, 'numberOfObjects').listen();
+            gui.add(controls, 'population').listen();
+
+
+            setInterval(giveBirthToHuman, 1000);
+            document.getElementById("WebGL-output").appendChild(renderer.domElement);
+
+            render();
+
+            function render () {
+                stats.update();
+
+                earth.rotation.y += controls.rotationSpeed * Math.PI / 180;
+
+                if (canRedraw) {
+                    controls.numberOfObjects = scene.children.length;
+                    controls.population = earth.children.length;
+                    earth.traverse( function (obj) {
+                       if (obj instanceof THREE.Sprite) {
+                           obj.scale.x = controls.scale;
+                           obj.scale.y = controls.scale;
+                           obj.scale.z = controls.scale;
+                       }
+                    });
+                    moveHumans();
+                    redraw();
+                    canRedraw = false;
+                }
+
+                requestAnimationFrame(render);
+                renderer.render(scene, camera);
+            }
+            function redraw () {
+
+            }
+            function moveHumans() {
+                Object.keys(HUMANS).forEach(function (key) {
+                    let latitude = (Math.random() * 2 - 0.25);
+                    let longitude = (Math.random() * 2 - 0.25);
+                    /* CAUTION: this order is important */
+                    HUMANS[key].moveLon(longitude);
+                    HUMANS[key].moveLat(latitude);
+                });
+            }
+
+            function giveBirthToHuman() {
+                let humans = generateHuman(earth.children.length);
+                humans.forEach(function (human) {
+                    human.sprite.scale.set(controls.scale, controls.scale, controls.scale);
+
+                    HUMANS[human.name] = human;
+                    console.log(human.sprite.position);
+                    earth.add(human.sprite);
+                });
+            }
+
+
+            function initStats () {
+                let stats = new Stats();
+                stats.setMode(0);
+
+                stats.domElement.position = 'absolute';
+                stats.domElement.top      = '0px';
+                stats.domElement.left     = '0px';
+
+                document.getElementById("Stats-output").appendChild(stats.domElement);
+                return stats;
+            }
+        }
+
+        window.onload = init;
+    </script>
+</html>

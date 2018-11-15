@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Macro Organism </title>
+    <meta charset="utf-8"/>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="./libs/three.js"></script>
+    <script src="./libs/dat.gui.js"></script>
+    <script src="./libs/stats.js"></script>
+</head>
+    <div id="WebGL-output"></div>
+    <div id="Stats-output"></div>
+
+    <script src="Origin.js"></script>
+    <script src="Country.js"></script>
+    <script src="Human.js"></script>
+    <script src="Util.js"></script>
+    <script type="text/javascript">
+        (function () {
+            let human = new Human(0, 0, 0, "name", 0);
+            console.log(human);
+        })();
+    </script>
+</html>
