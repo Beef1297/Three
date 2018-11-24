@@ -17,9 +17,11 @@
     <div id="Stats-output"></div>
 
     <script src="Origin.js"></script>
+    <script src="Const.js"></script>
+    <script src="Util.js"></script>
     <script src="Country.js"></script>
     <script src="Human.js"></script>
-    <script src="Util.js"></script>
+    <script src="Consume.js"></script>
 
 
     <script type="text/javascript">
@@ -31,7 +33,7 @@
         let HUMANS = {};
         function init () {
             let stats = initStats();
-
+            const clock = new THREE.Clock(true);
             scene = new THREE.Scene();
 
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -40,23 +42,34 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setClearColor(0x222222);
 
+            let axisHelper = new THREE.AxisHelper(20);
+            let axisHelper2 = new THREE.AxisHelper(20);
+            scene.add(axisHelper2);
+
+
             let earthGeometry = new THREE.SphereGeometry(30, 32, 24);
             let earthMaterial = new THREE.MeshLambertMaterial({
-                color: 0x999999,
+                color: 0xaaaaaa,
                 wireframe: true
             });
             let earth = new THREE.Mesh(earthGeometry, earthMaterial);
             earth.name = "earth";
+            earth.rotateZ(-15 * Math.PI / 180);
             earth["radius"] = 30;
             scene.add(earth);
+            earth.add(axisHelper);
 
+            /*  Light */
+            let ambientLight = new THREE.AmbientLight(0x999999);
+            scene.add(ambientLight);
+            /**********/
             camera.position.set(-30, 40, 30);
             camera.lookAt(scene.position);
             scene.add(camera);
 
             let controls = new function () {
                 this.rotationSpeed = 0.02;
-                this.scale = 0.03;
+                this.scale = 0.08;
                 this.numberOfObjects = scene.children.length;
                 this.population = earth.children.length;
             };
@@ -66,17 +79,22 @@
             gui.add(controls, 'scale', 0, 1);
             gui.add(controls, 'numberOfObjects').listen();
             gui.add(controls, 'population').listen();
-
-
+            
             setInterval(giveBirthToHuman, 1000);
+            setInterval(checkDeath, 1000);
             document.getElementById("WebGL-output").appendChild(renderer.domElement);
-
+            let sum = 0;
             render();
 
             function render () {
                 stats.update();
+                sum += clock.getDelta();
+                if (sum >= 1) {
+                    console.log(sum);
+                    sum = 0;
+                }
 
-                earth.rotation.y += controls.rotationSpeed * Math.PI / 180;
+                earth.rotateY(controls.rotationSpeed * Math.PI / 180);
 
                 if (canRedraw) {
                     controls.numberOfObjects = scene.children.length;
@@ -101,22 +119,45 @@
             }
             function moveHumans() {
                 Object.keys(HUMANS).forEach(function (key) {
-                    let latitude = (Math.random() * 2 - 0.25);
-                    let longitude = (Math.random() * 2 - 0.25);
+                    let latitude = (Math.random() * 4 - 2);
+                    let longitude = (Math.random() * 4 - 2);
                     /* CAUTION: this order is important */
                     HUMANS[key].moveLon(longitude);
                     HUMANS[key].moveLat(latitude);
                 });
             }
 
+            function rotateQuaternion(angle) {
+                let quaternion = earth.quaternion;
+
+                const axis = new THREE.Vector3(0, 1, 0).normalize();
+                const q = new THREE.Quaternion();
+                q.setFromAxisAngle(axis, angle);
+                quaternion.multiply(q);
+            }
             function giveBirthToHuman() {
                 let humans = generateHuman(earth.children.length);
                 humans.forEach(function (human) {
                     human.sprite.scale.set(controls.scale, controls.scale, controls.scale);
 
                     HUMANS[human.name] = human;
-                    console.log(human.sprite.position);
                     earth.add(human.sprite);
+                });
+            }
+
+            function checkDeath() {
+                earth.children.forEach(function (child) {
+                    if (child instanceof THREE.Sprite) {
+
+                        const name = child.name;
+                        HUMANS[name].age += 1;
+                        //console.log(child.name + " is " + HUMANS[child.name].age);
+                        if (!HUMANS[name].canAlive()) {
+                            console.log(name + " died... ");
+                            earth.remove(child);
+                            delete HUMANS[name];
+                        }
+                    }
                 });
             }
 
