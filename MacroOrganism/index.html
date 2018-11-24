@@ -79,7 +79,7 @@
             gui.add(controls, 'scale', 0, 1);
             gui.add(controls, 'numberOfObjects').listen();
             gui.add(controls, 'population').listen();
-            
+
             setInterval(giveBirthToHuman, 1000);
             setInterval(checkDeath, 1000);
             document.getElementById("WebGL-output").appendChild(renderer.domElement);
@@ -110,6 +110,7 @@
                     redraw();
                     canRedraw = false;
                 }
+                flighting();
 
                 requestAnimationFrame(render);
                 renderer.render(scene, camera);
@@ -117,13 +118,29 @@
             function redraw () {
 
             }
+            function flighting() {
+                Object.keys(HUMANS).forEach( function (key) {
+                   if (!HUMANS[key].isFlight) return;
+                   HUMANS[key].parabolicMotion().next();
+                   if (isLanded(HUMANS[key].position.x, HUMANS[key].position.y)) {
+                       HUMANS[key].isFlight = false;
+                   }
+                });
+
+            }
             function moveHumans() {
                 Object.keys(HUMANS).forEach(function (key) {
+                    if (HUMANS[key].isFlight) return;
                     let latitude = (Math.random() * 4 - 2);
                     let longitude = (Math.random() * 4 - 2);
                     /* CAUTION: this order is important */
                     HUMANS[key].moveLon(longitude);
                     HUMANS[key].moveLat(latitude);
+                    if (Math.random() * 100 < 0.1) {
+                        console.log("let's flight!");
+                        HUMANS[key].isFlight = true;
+                        HUMANS[key].moveByFlight(NorthAmericaContinent);
+                    }
                 });
             }
 
@@ -153,7 +170,7 @@
                         HUMANS[name].age += 1;
                         //console.log(child.name + " is " + HUMANS[child.name].age);
                         if (!HUMANS[name].canAlive()) {
-                            console.log(name + " died... ");
+                            //1console.log(name + " died... ");
                             earth.remove(child);
                             delete HUMANS[name];
                         }

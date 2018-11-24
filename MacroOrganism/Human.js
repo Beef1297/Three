@@ -22,8 +22,8 @@ class Human extends  Origin{
     /* 寿命と確率的死 */
     canAlive() {
         if (this._age >= LIFE_SPAN[parseInt(this.sex)]) return false;
-        let deathPossibility = YEAR_DEATH_RATE / 1000; // 人口千対であることより
-        return Math.random() * 100 > deathPossibility;
+         // 人口千対であることより
+        return Math.random() * 100 > YEAR_DEATH_RATE;
     }
 
     /* latitude に対して移動するメソッド */
@@ -52,5 +52,31 @@ class Human extends  Origin{
         this._sprite.position.set(pos.x, pos.y, pos.z);
     }
 
+    moveByFlight(targetPlace) {
+
+        // calculation of direction and normal vector
+        const humanCartesian = convertToSphereMap(this.position.x, this.position.y);
+        const targetPlaceCartesian = convertToSphereMap(targetPlace.position.x, targetPlace.position.y);
+        /*this._flightHorizontalVector*/
+        const horizontalVector = calcVectorBetweenPoints(humanCartesian, targetPlaceCartesian);
+        /*this._flightVerticalVector*/
+        const verticalVector = calcSphereNormalVector(humanCartesian);
+
+        // create generator
+        this.parabolicMotion(humanCartesian, horizontalVector, verticalVector);
+    }
+
+    *parabolicMotion(start, horizontalVector, verticalVector){
+        let presentCartesian = new THREE.Vector3();
+        while(this._isFlight) {
+            presentCartesian.add(horizontalVector);
+            presentCartesian.add(verticalVector);
+            const position = convertToLonLan(presentCartesian.x, presentCartesian.y, presentCartesian.z);
+            this._position.x = position.x;
+            this._position.y = position.y;
+            this._sprite.position.set(presentCartesian.x, presentCartesian.y, presentCartesian.z);
+            yield;
+        }
+    }
 }
 
