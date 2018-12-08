@@ -31,6 +31,7 @@
         let renderer;
 
         let HUMANS = {};
+        let FLIGHT = {};
         function init () {
             let stats = initStats();
             const clock = new THREE.Clock(true);
@@ -44,10 +45,10 @@
 
             let axisHelper = new THREE.AxisHelper(20);
             let axisHelper2 = new THREE.AxisHelper(20);
-            scene.add(axisHelper2);
+            //scene.add(axisHelper2);
 
 
-            let earthGeometry = new THREE.SphereGeometry(30, 32, 24);
+            let earthGeometry = new THREE.SphereGeometry(60, 32, 24);
             let earthMaterial = new THREE.MeshLambertMaterial({
                 color: 0xaaaaaa,
                 wireframe: true
@@ -55,7 +56,7 @@
             let earth = new THREE.Mesh(earthGeometry, earthMaterial);
             earth.name = "earth";
             earth.rotateZ(-15 * Math.PI / 180);
-            earth["radius"] = 30;
+            earth["radius"] = 60;
             scene.add(earth);
             earth.add(axisHelper);
 
@@ -63,7 +64,7 @@
             let ambientLight = new THREE.AmbientLight(0x999999);
             scene.add(ambientLight);
             /**********/
-            camera.position.set(-30, 40, 30);
+            camera.position.set(-100, 120, 100);
             camera.lookAt(scene.position);
             scene.add(camera);
 
@@ -72,8 +73,7 @@
                 this.scale = 0.08;
                 this.numberOfObjects = scene.children.length;
                 this.population = earth.children.length;
-            };
-
+            }
             let gui = new dat.GUI();
             gui.add(controls, 'rotationSpeed', -0.5, 0.5);
             gui.add(controls, 'scale', 0, 1);
@@ -83,16 +83,19 @@
             setInterval(giveBirthToHuman, 1000);
             setInterval(checkDeath, 1000);
             document.getElementById("WebGL-output").appendChild(renderer.domElement);
-            let sum = 0;
+
+
             render();
 
             function render () {
                 stats.update();
+                /*
                 sum += clock.getDelta();
                 if (sum >= 1) {
                     console.log(sum);
                     sum = 0;
                 }
+                */
 
                 earth.rotateY(controls.rotationSpeed * Math.PI / 180);
 
@@ -106,12 +109,12 @@
                            obj.scale.z = controls.scale;
                        }
                     });
+
                     moveHumans();
                     redraw();
                     canRedraw = false;
                 }
                 flighting();
-
                 requestAnimationFrame(render);
                 renderer.render(scene, camera);
             }
@@ -120,26 +123,43 @@
             }
             function flighting() {
                 Object.keys(HUMANS).forEach( function (key) {
-                   if (!HUMANS[key].isFlight) return;
-                   HUMANS[key].parabolicMotion().next();
-                   if (isLanded(HUMANS[key].position.x, HUMANS[key].position.y)) {
-                       HUMANS[key].isFlight = false;
+                   if (!HUMANS[key].nextMotion()) return;
+                   console.log("flighting ---^^----");
+                   if (HUMANS[key].isLanded()) {
+                       console.log("Landed!");
+                       HUMANS[key].setFlight(false);
                    }
                 });
-
             }
+
             function moveHumans() {
                 Object.keys(HUMANS).forEach(function (key) {
-                    if (HUMANS[key].isFlight) return;
-                    let latitude = (Math.random() * 4 - 2);
-                    let longitude = (Math.random() * 4 - 2);
-                    /* CAUTION: this order is important */
-                    HUMANS[key].moveLon(longitude);
-                    HUMANS[key].moveLat(latitude);
-                    if (Math.random() * 100 < 0.1) {
-                        console.log("let's flight!");
-                        HUMANS[key].isFlight = true;
-                        HUMANS[key].moveByFlight(NorthAmericaContinent);
+                    if (!HUMANS[key].isFlight) {
+                        let latitude = (Math.random() * 4 - 2);
+                        let longitude = (Math.random() * 4 - 2);
+                        /* CAUTION: this order is important */
+                        HUMANS[key].moveLon(longitude);
+                        HUMANS[key].moveLat(latitude);
+                        if (Math.random() * 100 < 0.03) {
+                            console.log("let's flight!");
+                            HUMANS[key].moveByFlight(NorthAmericaContinent);
+                            /* * * * <temp> visualize vector ** ** */
+                            const hlinegeometry = new THREE.Geometry();
+                            hlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Hvec.x, HUMANS[key].Hvec.y, HUMANS[key].Hvec.z));
+                            hlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Hvec.x * 10, HUMANS[key].Hvec.y * 10, HUMANS[key].Hvec.z * 10));
+
+                            const hlinematerial = new THREE.LineBasicMaterial({ color: 0xfff0f0, linewidth: 10});
+                            const hline = new THREE.Line(hlinegeometry, hlinematerial);
+                            HUMANS[key].sprite.add(hline);
+                            const vlinegeometry = new THREE.Geometry();
+                            vlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Vvec.x, HUMANS[key].Vvec.y, HUMANS[key].Vvec.z));
+                            vlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Vvec.x * 20, HUMANS[key].Vvec.y * 20, HUMANS[key].Vvec.z * 20));
+                            const vlinematerial = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 5});
+                            const vline = new THREE.Line(vlinegeometry, vlinematerial);
+                            HUMANS[key].sprite.add(vline);
+                            /* * * * */
+                            HUMANS[key].setFlight(true);
+                        }
                     }
                 });
             }
@@ -169,6 +189,7 @@
                         const name = child.name;
                         HUMANS[name].age += 1;
                         //console.log(child.name + " is " + HUMANS[child.name].age);
+                        if (HUMANS[name].getFlight()) return; // flight 中はスキップする
                         if (!HUMANS[name].canAlive()) {
                             //1console.log(name + " died... ");
                             earth.remove(child);

@@ -14,13 +14,13 @@ class Country extends Origin {
     get population () { return this._population; }
     set population (value) { this._population = value; }
 
-    isHumanInArea (human) {
+    isInArea (longitude, latitude) {
         let isInLongitude = false;
         let isInLatitude = false;
-        if ( this.west < human.position.x && human.position.x < this.east ) {
+        if ( this.west < longitude && longitude < this.east ) {
             isInLatitude = true;
         }
-        if ( this.south < human.position.y && human.position.y < this.north) {
+        if ( this.south < latitude && latitude < this.north) {
             isInLongitude = true;
         }
 
@@ -29,24 +29,32 @@ class Country extends Origin {
 
 
     getRandomLon() {
-        if ( this._east >= 0 && this._west >= 0) {
-            return Math.random() * (this._east - this._west) + this._west;
-        } else if ( this._east <= 0 && this._west <= 0) {
-            return Math.random() * (this._west - this._east) + this._east;
+        let larger, smaller;
+        if (Math.abs(this._east) > Math.abs(this._west)) {
+            larger = this._east;
+            smaller = this._west;
+        } else if (Math.abs(this._west) < Math.abs(this._east)) {
+            larger = this._west;
+            smaller = this._east;
         } else {
-            let diff = (this._west < 0) ? this._west : this._east;
-            return Math.random() * (this._west + this._east) + diff;
+            larger = (this._west < 0) ? this._east : this._west;
+            smaller = (this._west < 0) ? this._west : this._east;
         }
+        return Math.random() * (larger - smaller) + smaller;
     }
     getRandomLat() {
-        if (this._north >= 0 && this._south >= 0) {
-            return Math.random() * (this._north - this._south) + this._south;
-        } else if ( this._north <= 0 && this._south <= 0) {
-            return Math.random() * (this._south - this._north) + this._north;
+        let larger, smaller;
+        if (Math.abs(this._north) > Math.abs(this._south)) {
+            larger = this._north;
+            smaller = this._south;
+        } else if (Math.abs(this._north) < Math.abs(this._south)) {
+            larger = this._south;
+            smaller = this._north;
         } else {
-            let diff = (this._north < 0) ? this._north : this._south;
-            return Math.random() * (this._south + this._north) + diff;
+            larger = (this._north < 0) ? this._south : this._north;
+            smaller = (this._north < 0) ? this._north : this._south;
         }
+        return Math.random() * ( larger - smaller ) + smaller;
     }
     static getCenterLon(east, west) {
         if (east >= 0 && west >= 0) {

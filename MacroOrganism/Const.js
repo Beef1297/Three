@@ -43,15 +43,15 @@ const SOUTHAMERICACONTINENT = {
     north: 12 + 27 / 60 + 31 / 3600
 };
 const NORTHAMERICACONTNENT = {
-    east: - ( 11 + 55 / 60 + 42 / 3600),
-    west: - ( 167 + 21 / 60 + 23 / 3600),
+    east: - ( 0 /* 11 */ + 55 / 60 + 42 / 3600),
+    west: - ( 150 /* 164 */+ 21 / 60 + 23 / 3600),
     south: 8 + 2 / 60 + 35,
-    north: 83 + 39 / 60 + 11 / 3600
+    north: 70 + 39 / 60 + 11 / 3600
 };
 
 const MEN = 0;
 const WOMEN = 1;
 const LIFE_SPAN = [81, 87];
-const EARTH_RADIUS = 30;
+const EARTH_RADIUS = 60;
 
 let canRedraw = false;
