@@ -41,12 +41,24 @@ const NorthAmericaContinent = new Country(
     NORTHAMERICACONTNENT.north
 );
 const Countries = [
+    Japan,
     EurasianContinent,
     AfricanContinent,
     AustralianContinent,
     SouthAmericaContinent,
     NorthAmericaContinent,
 ];
+
+let humanAttractiveManager = (
+    () => {
+        // atan2 の値域が -PI - PI であるため 0 ~ 360 の範囲で取りうる．
+        let a = new Array(361).fill(0);
+        for (let i = 0; i < a.length; i++) {
+            a[i] = new Array(361).fill(0);
+        }
+        return a;
+    }
+)();
 /**
  * generation fo babies per day( some sec)
  * and, instantiate sprite at the same time
@@ -56,14 +68,17 @@ const Countries = [
  */
 function generateHuman(population, country) {
     let babies = [];
-    let number = 0;
+    let num = 0;
     for (let i = 0; i < TRY; i++) {
         let possibility = Math.random();
-        if (possibility > BIRTH_RATE_PER_DAY) {
+        const birthRate = ( TRY  * 10 + population / 2) / BIRTH_AMOUNT_PER_DAY;
+        console.log("birthRate is: " + birthRate);
+
+        if (possibility < birthRate) {
             const sex = _decideSex();
             const lon = country.getRandomLon();
             const lat = country.getRandomLat();
-            const name = getBabyName(number);
+            const name = _getBabyName(num);
             const attractive = _enchantAttractive();
             let spriteColor = 0x000000;
             if ( sex === MEN ) {
@@ -76,13 +91,15 @@ function generateHuman(population, country) {
                 //blending: THREE.AdditiveBlending,
                 color: spriteColor
             });
+            // longitude, latitude に対応した配列要素に attractive を加算
+            humanAttractiveManager[Math.floor(lon + 180)][Math.floor(lat + 180)] += attractive;
             let sprite = new THREE.Sprite(spriteMaterial);
             let pos = convertToSphereMap(lon, lat);
             sprite.position.set(pos.x, pos.y, pos.z);
             sprite.name = name;
             let baby = new Human(sex, lon, lat, name, sprite, attractive);
             babies.push(baby);
-            number++;
+            num++;
         }
     }
     canRedraw = true;
@@ -114,12 +131,12 @@ function _enchantAttractive(){
 }
 
 /**
- *  @param int number : 生まれた番号 メソッド一度の呼び出しに置ける
- *  @return string name: 生まれた子の名前: human-日付-番号
+ *  @param {number} number : 生まれた番号 メソッド一度の呼び出しにおける
+ *  @return {string} name: 生まれた子の名前: human-日付-番号
  *      同じ名前は生まれてこない. 連想配列で管理するのに，同じ名前が出てくると reference error
  *      になったりしてしまうので，その解決策が思い着き次第　FIX
  */
-function getBabyName(number) {
+function _getBabyName(number) {
     return "human-" + Date.now() + "-" + number;
 }
 

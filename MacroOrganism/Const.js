@@ -5,8 +5,8 @@ const YEAR_DEATH_AMOUNT = 1344000; // 2017 data
 const DEATH_AMOUNT_PER_DAY = Math.round(YEAR_DEATH_AMOUNT / YEAR); // 2017
 const YEAR_BIRTH_RATE = 7.5; // 人口千対 2017
 const YEAR_DEATH_RATE = 10.8; // 人口千対 2017
-const TRY = 1000; // 試行回数(出産に対する）を 100　とする
-const BIRTH_RATE_PER_DAY = 1 - BIRTH_AMOUNT_PER_DAY / TRY / 10;
+const TRY = 1000; // 試行回数(出産に対する）を ?　とする
+
 const INT_MAX = 2147483647;
 
 const JAPAN = {
@@ -53,5 +53,4 @@ const MEN = 0;
 const WOMEN = 1;
 const LIFE_SPAN = [81, 87];
 const EARTH_RADIUS = 60;
-
 let canRedraw = false;

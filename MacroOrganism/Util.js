@@ -95,6 +95,17 @@ function calcNormalVectorByDirection(directVector, sourceVector) {
         .normalize();
 }
 
+function printArray2(a){
+    let str = "";
+    for (let i = 0;i < a.length;i++){
+        for (let j = 0;j < a[i].length; j++) {
+            str += a[i][j] + " ";
+        }
+        str += "\n";
+    }
+    console.log(str);
+}
+
 
 /* TODO: perlin noise の実装 */
 function _lerp(a0, a1, w){

@@ -86,7 +86,6 @@
 
 
             render();
-
             function render () {
                 stats.update();
                 /*
@@ -109,7 +108,6 @@
                            obj.scale.z = controls.scale;
                        }
                     });
-
                     moveHumans();
                     redraw();
                     canRedraw = false;
@@ -126,7 +124,7 @@
                    if (!HUMANS[key].nextMotion()) return;
 
                    if (HUMANS[key].isLanded()) {
-                       console.log("Landed! ///// ____^^");
+                       //console.log("Landed! ///// ____^^");
                        HUMANS[key].setFlight(false);
                    } else {
                        //console.log("flighting ---^^----");
@@ -137,13 +135,14 @@
             function moveHumans() {
                 Object.keys(HUMANS).forEach(function (key) {
                     if (!HUMANS[key].isFlight) {
-                        let latitude = (Math.random() * 4 - 2);
-                        let longitude = (Math.random() * 4 - 2);
                         /* CAUTION: this order is important */
-                        HUMANS[key].moveLon(longitude);
-                        HUMANS[key].moveLat(latitude);
+                        /*
+                        HUMANS[key].moveRandomLon(4);
+                        HUMANS[key].moveRandomLat(4);
+                        */
+                        HUMANS[key].moveByAttractive();
                         if (Math.random() * 100 < 0.03) {
-                            console.log("let's flight!");
+                            //console.log("let's flight!");
                             HUMANS[key].moveByFlight(Countries[(Math.floor(Math.random() * Countries.length))]);
                             /* * * * <temp> visualize vector ** ** */
                             /* for debugging
@@ -187,6 +186,7 @@
             }
 
             function checkDeath() {
+                const deathRate = earth.children.length / DEATH_AMOUNT_PER_DAY;
                 earth.children.forEach(function (child) {
                     if (child instanceof THREE.Sprite) {
 
@@ -194,8 +194,9 @@
                         HUMANS[name].age += 1;
                         //console.log(child.name + " is " + HUMANS[child.name].age);
                         if (HUMANS[name].getFlight()) return; // flight 中はスキップする
-                        if (!HUMANS[name].canAlive()) {
-                            //1console.log(name + " died... ");
+                        if (!HUMANS[name].canAlive(deathRate)) {
+                            //console.log(name + " died... ");
+                            Origin.subAttractive(HUMANS[name]);
                             earth.remove(child);
                             delete HUMANS[name];
                         }

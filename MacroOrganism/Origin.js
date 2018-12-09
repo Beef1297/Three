@@ -1,7 +1,7 @@
 'use strict';
 
 class Vector2 {
-    constructor(x, y) {
+    constructor(x = 0, y = 0) {
         this._x = x;
         this._y = y;
     }
@@ -30,4 +30,19 @@ class Origin {
     get attractive() { return this._attractive; }
     set attractive(value) { this._attractive = value; }
 
+    /**
+     * thing の attractive を加算する
+     * @param {Origin} thing
+     */
+    static addAttractive(thing) {
+        humanAttractiveManager[Math.floor(thing.position.x + 180)][Math.floor(thing.position.y + 180)] += thing.attractive;
+    }
+
+    /**
+     * thing の attractive を減算する
+     * @param {Origin} thing
+     */
+    static subAttractive(thing) {
+        humanAttractiveManager[Math.floor(thing.position.x + 180)][Math.floor(thing.position.y + 180)] -= thing.attractive;
+    }
 }

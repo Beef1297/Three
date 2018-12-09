@@ -37,27 +37,24 @@ class Human extends  Origin{
 
     /* 生か死かの判断 */
     /* 寿命と確率的死 */
-    canAlive() {
+    canAlive(deathRate) {
         if (this._age >= LIFE_SPAN[parseInt(this.sex)]) return false;
          // 人口千対であることより
-        return Math.random() * 100 > YEAR_DEATH_RATE;
+        return Math.random() * 100 < deathRate;
     }
-
+    moveRandomLat(offset) {
+        const latitude = Math.random() * offset - offset / 2;
+        this.moveLat(latitude);
+    }
+    moveRandomLon(offset) {
+        const longitude = Math.random() * offset - offset / 2;
+        this.moveLon(longitude);
+    }
     /* latitude に対して移動するメソッド */
     moveLat(latitude) {
 
         //this._sprite.rotateZ(angle); // なんかちゃんと機能しない，global に対して rotate するんじゃないの？？
-        // quaternion 使ってみる
-        /*
-        this.position.y += latitude;
-        this._sprite.useQuaternion = true;
-        const axis = new THREE.Vector3(0, 0, 1).normalize();
-        const angle = latitude * Math.PI / 180;
-        const q = new THREE.Quaternion();
-        q.setFromAxisAngle(axis, angle);
-        this.sprite.quaternion.copy(q);
-        */
-
+        // quaternion 使ってみる -> うまくいかなかった
         this.position.y += latitude;
         const pos = convertToSphereMap(this.position.x, this.position.y);
         this._sprite.position.set(pos.x, pos.y, pos.z);
@@ -70,6 +67,33 @@ class Human extends  Origin{
         this._sprite.position.set(pos.x, pos.y, pos.z);
     }
 
+    moveByAttractive() {
+        let direction = new Vector2();
+        const i_lon = Math.floor(this.position.x + 180);
+        const i_lat = Math.floor(this.position.y + 180);
+        const column = 361;
+        const raw = 361;
+        let attractive = 0;
+        // 移動方向の決定
+        for (let i = -1;i <= 1; i++) {
+            for (let j = -1;j <= 1; j++) {
+                if (i === 0 && j === 0) continue;
+                // あくまで，端と端はくっついてるとして，反対側と繋げる
+                // 負の場合は，反対から数えるイメージ
+                const t_lon = (i_lon + i < 0) ? i_lon + i + column : i_lon + i; // edge case を考えて
+                const t_lat = (i_lat + j < 0) ? i_lat + j + raw    : i_lat + j;
+                if ( attractive < humanAttractiveManager[(t_lon % column)][(t_lat % raw)]) {
+                    attractive = humanAttractiveManager[(t_lon % column)][(t_lat % raw)];
+                    direction.x = i;
+                    direction.y = j;
+                }
+            }
+        }
+        Origin.subAttractive(this); // 動く前に，いた場所の attractive を減らす
+        this.moveLon(direction.x);
+        this.moveLat(direction.y);
+        Origin.addAttractive(this); // 移動後に, attractive を加算更新する．
+    }
     /**
      *
      * @param {Country} targetPlace - 目的地
@@ -183,8 +207,8 @@ class Human extends  Origin{
             flag = false;
         }
         if (flag){
-            console.log("Landed Longitude and latitude: " + this._position.x + " , " + this._position.y);
-            console.log("Landed Target longitude: " + this._flightTargetPlace.position.x + " latitude: " + this._flightTargetPlace.position.y);
+            //console.log("Landed Longitude and latitude: " + this._position.x + " , " + this._position.y);
+            //console.log("Landed Target longitude: " + this._flightTargetPlace.position.x + " latitude: " + this._flightTargetPlace.position.y);
         }
         return flag;
 
