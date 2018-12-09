@@ -33,8 +33,8 @@ const AFRICANCONTINENT = {
 const AUSTRALIANCONTINENT = {
     east: 154.0,
     west: 113.0,
-    south: -11.0,
-    north: -44.0
+    south: -44.0,
+    north: -11.0
 };
 const SOUTHAMERICACONTINENT = {
     east: - ( 34 + 47 / 60 + 35 / 3600),

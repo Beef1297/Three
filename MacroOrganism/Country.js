@@ -17,10 +17,11 @@ class Country extends Origin {
     isInArea (longitude, latitude) {
         let isInLongitude = false;
         let isInLatitude = false;
-        if ( this.west < longitude && longitude < this.east ) {
+
+        if ( this.west <= longitude && longitude <= this.east ) {
             isInLatitude = true;
         }
-        if ( this.south < latitude && latitude < this.north) {
+        if ( this.south <= latitude && latitude <= this.north) {
             isInLongitude = true;
         }
 
@@ -57,6 +58,8 @@ class Country extends Origin {
         return Math.random() * ( larger - smaller ) + smaller;
     }
     static getCenterLon(east, west) {
+        return (east + west) / 2;
+        /*
         if (east >= 0 && west >= 0) {
             return east - west;
         } else if (east <= 0 && west <= 0) {
@@ -64,8 +67,11 @@ class Country extends Origin {
         } else {
             return east + west;
         }
+        */
     }
     static getCenterLat(north, south) {
+        return ( north + south ) / 2;
+        /*
         if (north >= 0 && south >= 0) {
             return north - south;
         } else if (north <= 0 && south <= 0) {
@@ -73,6 +79,7 @@ class Country extends Origin {
         } else {
             return south + north;
         }
+        */
     }
 
 }

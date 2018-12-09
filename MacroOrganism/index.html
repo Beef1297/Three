@@ -124,10 +124,12 @@
             function flighting() {
                 Object.keys(HUMANS).forEach( function (key) {
                    if (!HUMANS[key].nextMotion()) return;
-                   console.log("flighting ---^^----");
+
                    if (HUMANS[key].isLanded()) {
-                       console.log("Landed!");
+                       console.log("Landed! ///// ____^^");
                        HUMANS[key].setFlight(false);
+                   } else {
+                       //console.log("flighting ---^^----");
                    }
                 });
             }
@@ -142,7 +144,7 @@
                         HUMANS[key].moveLat(latitude);
                         if (Math.random() * 100 < 0.03) {
                             console.log("let's flight!");
-                            HUMANS[key].moveByFlight(NorthAmericaContinent);
+                            HUMANS[key].moveByFlight(AustralianContinent);
                             /* * * * <temp> visualize vector ** ** */
                             const hlinegeometry = new THREE.Geometry();
                             hlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Hvec.x, HUMANS[key].Hvec.y, HUMANS[key].Hvec.z));

@@ -21,7 +21,7 @@ const AustralianContinent = new Country(
     Country.getCenterLat(AUSTRALIANCONTINENT.north, AUSTRALIANCONTINENT.south),
     AUSTRALIANCONTINENT.east,
     AUSTRALIANCONTINENT.south,
-    AUSTRALIANCONTINENT.east,
+    AUSTRALIANCONTINENT.west,
     AUSTRALIANCONTINENT.north
 );
 const SouthAmericaContinent = new Country(
@@ -29,7 +29,7 @@ const SouthAmericaContinent = new Country(
     Country.getCenterLat(SOUTHAMERICACONTINENT.north, SOUTHAMERICACONTINENT.south),
     SOUTHAMERICACONTINENT.east,
     SOUTHAMERICACONTINENT.south,
-    SOUTHAMERICACONTINENT.east,
+    SOUTHAMERICACONTINENT.west,
     SOUTHAMERICACONTINENT.north
 );
 const NorthAmericaContinent = new Country(
@@ -69,7 +69,9 @@ function generateHuman(population) {
                 color: spriteColor
             });
             let sprite = new THREE.Sprite(spriteMaterial);
-            let pos = convertToSphereMap(lon, lat);
+            let pos_t = convertToSphereMap(lon, lat);
+            const lonlan_t = convertToLonLan(pos_t.x, pos_t.y, pos_t.z);
+            const pos = convertToSphereMap(lonlan_t.x, lonlan_t.y);
             sprite.position.set(pos.x, pos.y, pos.z);
             sprite.name = name;
             const attractive = 0; //TODO: 実装

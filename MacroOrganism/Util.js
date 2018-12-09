@@ -12,10 +12,24 @@ function convertToSphereMap (longitude, latitude ) {
     return pos;
 }
 
+function approximatelyEqualVector(a, b) {
+    return ( b.x - 1 < a.x && a.x < b.x + 1 )
+        && ( b.y - 1 < a.y && a.y < b.y + 1 )
+        && ( b.z - 1 < a.z && a.z < b.z + 1 );
+}
+
+function approximatelyEqual(a, b) {
+    return b - 5 <= a && a <= b + 5;
+}
+
 function convertToLonLan (x, y, z) {
     const theta = - Math.atan2(z, x);//acos(z / Math.sqrt(x * x + y * y + z * z));
-    const phi   = Math.atan2(y, z);//acos(x / Math.sqrt(x * x + y * y));
-    console.log("ToLonLan: theta: " + theta + " phi: " + phi);
+    /* phi は x-axis, z-axis どちらが適切なのか
+    *  もちろんみる平面が異なれば，角度が変わってくる．経度と緯度は，赤道上の点からみて
+    *  北緯，南緯を計算する．つまり，2点間の角度を求めればいいのでは？？
+    * */
+    const phi   = ((y < 0) ? -1 : 1) * (new THREE.Vector3(x, y, z).angleTo(new THREE.Vector3(x, 0, z)));//Math.atan2(y, x);//acos(x / Math.sqrt(x * x + y * y));
+    //console.log("ToLonLan: theta: " + theta + " phi: " + phi);
     const longitude = theta * 180 / Math.PI;
     const latitude = phi * 180 / Math.PI;
     return new Vector2(longitude, latitude);
