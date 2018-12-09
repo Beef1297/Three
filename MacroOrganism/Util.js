@@ -77,7 +77,7 @@ function calcSphereNormalVector(position) {
  * @returns {THREE.Vector3}
  */
 function calcVectorBetweenPoints(_from, _to) {
-    return new THREE.Vector3(_to.x - _from_.x, _to.y - _from_.y, _to.z - _from_.z).normalize();
+    return new THREE.Vector3(_to.x - _from.x, _to.y - _from.y, _to.z - _from.z).normalize();
 }
 
 /**
