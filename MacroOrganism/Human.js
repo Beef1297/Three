@@ -23,7 +23,7 @@ class Human extends  Origin{
     get isFlight () { return this._isFlight; }
     //set isFlight (value) { this._isFlight = value; }
     get FlightTargetPlace () { return this._flightTargetPlace; }
-    // temp
+    // for Debug
     get Hvec () { return this._hvec; }
     get Vvec () { return this._vvec; }
 
@@ -70,6 +70,17 @@ class Human extends  Origin{
         this._sprite.position.set(pos.x, pos.y, pos.z);
     }
 
+    /**
+     *
+     * @param {Country} targetPlace - 目的地
+     * Flight をする前のセットアップ．
+     * 球体の法線ベクトル
+     * 目的地への方向ベクトル．
+     * 方向ベクトルに対する法線ベクトル
+     * 距離
+     * generator の初期化
+     * を行っている．
+     */
     moveByFlight(targetPlace) {
         //console.log('This is moveByFlight');
         this._flightTargetPlace = targetPlace;
@@ -96,7 +107,19 @@ class Human extends  Origin{
     }
 
 
-
+    /**
+     * Generator:
+     * Flight の本体.目的地に対して，lerp をしつつ，そこに，法線方向のベクトルを加算して飛ばしている．
+     * TODO: 球体の内部に入らないように Fligh する
+     * Quaternion など色々試したがうまくいかなかったのでこの形に落ち着いてる．
+     * @param start
+     * @param horizontalVector
+     * @param verticalVector
+     * @param sphericalVector
+     * @param targetPlace
+     * @param distance
+     * @returns {IterableIterator<*>}
+     */
     * parabolicMotion(start, horizontalVector, verticalVector, sphericalVector, targetPlace, distance){
         //console.log("start position: " + start.x + ", " + start.y + ", " + start.z + " mag: " + Math.sqrt(start.dot(start)));
         const startL = convertToLonLan(start.x, start.y, start.z);
@@ -116,31 +139,10 @@ class Human extends  Origin{
                 presentCartesian.lerp(new THREE.Vector3().subVectors(presentCartesian, diffVec), 0.1);
                 //presentCartesian.subVectors(presentCartesian, sphericalVector.clone().multiplyScalar(3));
             }
-            /*
-            const x = horizontalVector.clone().multiplyScalar(2);
-            let y = verticalVector.clone().multiplyScalar(A * Math.sin(omega * t  / 2));
-            console.log("flighting x: " + '( ' + x.x + ', ' + x.y + ', ' + x.z + ' )' + " y: " + '( ' + y.x + ', ' + y.y + ', ' + y.z + ' )' );
-            presentCartesian.addVectors(presentCartesian, x);
-            if ( t >= lambda / 4 ) {
-                console.log("negate! ||||||||||||||||||||||");
-                presentCartesian.subVectors(presentCartesian, y);
-            } else {
-                presentCartesian.addVectors(presentCartesian, y);
-            }
-            */
+
             const position = convertToLonLan(presentCartesian.x, presentCartesian.y, presentCartesian.z);
             this._position.x = position.x;
             this._position.y = position.y;
-            if (approximatelyEqualVector(presentCartesian, targetPlace)){
-                //console.log("I should be landed Longitude: " + this._position.x + " latitude: " + this._position.y);
-                const targetPlaceLonLan = convertToLonLan(targetPlace.x, targetPlace.y, targetPlace.z);
-                //console.log("Target longitude: " + targetPlaceLonLan.x + " latitude: " + targetPlaceLonLan.y);
-            }
-            //console.log("LanLon position is: " + "lon: " + this._position.x + "lan: " + this._position.y);
-            //console.log("target position is: lon: " + this._flightTargetPlace.position.x + "lan: " + this._flightTargetPlace.position.y);
-            //console.log("Human position(cartesian) is" + "x: " + presentCartesian.x + "y: " + presentCartesian.y + "z: " + presentCartesian.z);
-            //console.log("flighting! mag:" + Math.sqrt(presentCartesian.x * presentCartesian.x + presentCartesian.y * presentCartesian.y + presentCartesian.z * presentCartesian.z));
-            //console.log("flighting! mag:" + Math.sqrt(presentCartesian.dot(presentCartesian)));
 
             //console.log("parabolic: x=" + presentCartesian.x + " y= " + presentCartesian.y + " z= " + presentCartesian.z);
             this._sprite.position.set(presentCartesian.x, presentCartesian.y, presentCartesian.z);
@@ -150,6 +152,10 @@ class Human extends  Origin{
 
     }
 
+    /**
+     * generator を直接触っても思うように動かなかったのでメソッド化
+     * @returns {boolean}
+     */
     nextMotion() {
         if (this._isFlight) {
             this._flightGenerator.next();
@@ -159,11 +165,23 @@ class Human extends  Origin{
         }
     }
 
+    /**
+     * 目的地の経緯度内であるかどうか
+     * 位置が，球体の近くかどうか
+     * で判定している．
+     * @returns {Boolean} Flight が到着したかどうか
+     */
     isLanded() {
         // target の country クラスを持つようにする．
         // country class の isInArea で判定
         let flag = this._flightTargetPlace.isInArea(this._position.x, this._position.y);
-        if (!approximatelyEqual(new THREE.Vector3(this._sprite.position.x, this._sprite.position.y, this._sprite.position.z).length(), EARTH_RADIUS)) flag = false;
+        if (!approximatelyEqual(
+            new THREE.Vector3(this._sprite.position.x, this._sprite.position.y, this._sprite.position.z).length(),
+            EARTH_RADIUS,
+            3 // 誤差
+        )) {
+            flag = false;
+        }
         if (flag){
             console.log("Landed Longitude and latitude: " + this._position.x + " , " + this._position.y);
             console.log("Landed Target longitude: " + this._flightTargetPlace.position.x + " latitude: " + this._flightTargetPlace.position.y);

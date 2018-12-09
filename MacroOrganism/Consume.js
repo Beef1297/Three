@@ -40,41 +40,46 @@ const NorthAmericaContinent = new Country(
     NORTHAMERICACONTNENT.west,
     NORTHAMERICACONTNENT.north
 );
-
+const Countries = [
+    EurasianContinent,
+    AfricanContinent,
+    AustralianContinent,
+    SouthAmericaContinent,
+    NorthAmericaContinent,
+];
 /**
  * generation fo babies per day( some sec)
  * and, instantiate sprite at the same time
- * @param population
- * @returns {Array}
+ * @param {int} population - 今の人口
+ * @param {Object} country - Country Class 生まれる場所
+ * @returns {Array} babies - 生まれた子供の配列
  */
-function generateHuman(population) {
+function generateHuman(population, country) {
     let babies = [];
     let number = 0;
     for (let i = 0; i < TRY; i++) {
         let possibility = Math.random();
         if (possibility > BIRTH_RATE_PER_DAY) {
-            const sex = decideSex();
-            const lon = Japan.getRandomLon();
-            const lat = Japan.getRandomLat();
+            const sex = _decideSex();
+            const lon = country.getRandomLon();
+            const lat = country.getRandomLat();
             const name = getBabyName(number);
-            let spriteColor = 0xffff00;
+            const attractive = _enchantAttractive();
+            let spriteColor = 0x000000;
             if ( sex === MEN ) {
-                spriteColor = 0x0000dd;
+                spriteColor = 0x403f6f; // navy ( pantone )
             } else {
-                spriteColor = 0xdd0000;
+                spriteColor = 0xfa7268; // living coral (pantone)
             }
 
             let spriteMaterial = new THREE.SpriteMaterial({
-                blending: THREE.AdditiveBlending,
+                //blending: THREE.AdditiveBlending,
                 color: spriteColor
             });
             let sprite = new THREE.Sprite(spriteMaterial);
-            let pos_t = convertToSphereMap(lon, lat);
-            const lonlan_t = convertToLonLan(pos_t.x, pos_t.y, pos_t.z);
-            const pos = convertToSphereMap(lonlan_t.x, lonlan_t.y);
+            let pos = convertToSphereMap(lon, lat);
             sprite.position.set(pos.x, pos.y, pos.z);
             sprite.name = name;
-            const attractive = 0; //TODO: 実装
             let baby = new Human(sex, lon, lat, name, sprite, attractive);
             babies.push(baby);
             number++;
@@ -90,12 +95,32 @@ function generateHuman(population) {
  *  1: female
  * @returns {number}
  */
-function decideSex(){
+function _decideSex(){
     if (Math.random() >= 0.5) {
         return MEN;
     } else {
         return WOMEN;
     }
+}
+
+/**
+ *
+ *
+ * @return int attractive : 魅力度を返す. ランダムで最大値 100
+ */
+function _enchantAttractive(){
+    const max = 100;
+    return Math.floor(Math.random() * max);
+}
+
+/**
+ *  @param int number : 生まれた番号 メソッド一度の呼び出しに置ける
+ *  @return string name: 生まれた子の名前: human-日付-番号
+ *      同じ名前は生まれてこない. 連想配列で管理するのに，同じ名前が出てくると reference error
+ *      になったりしてしまうので，その解決策が思い着き次第　FIX
+ */
+function getBabyName(number) {
+    return "human-" + Date.now() + "-" + number;
 }
 
 

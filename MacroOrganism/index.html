@@ -41,16 +41,16 @@
 
             renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x222222);
+            renderer.setClearColor(0xfffaf0);
 
             let axisHelper = new THREE.AxisHelper(20);
             let axisHelper2 = new THREE.AxisHelper(20);
             //scene.add(axisHelper2);
 
 
-            let earthGeometry = new THREE.SphereGeometry(60, 32, 24);
+            let earthGeometry = new THREE.SphereGeometry(60, 24, 16);
             let earthMaterial = new THREE.MeshLambertMaterial({
-                color: 0xaaaaaa,
+                color: 0xb0a098, // PANTONE 2474 C
                 wireframe: true
             });
             let earth = new THREE.Mesh(earthGeometry, earthMaterial);
@@ -144,8 +144,9 @@
                         HUMANS[key].moveLat(latitude);
                         if (Math.random() * 100 < 0.03) {
                             console.log("let's flight!");
-                            HUMANS[key].moveByFlight(AustralianContinent);
+                            HUMANS[key].moveByFlight(Countries[(Math.floor(Math.random() * Countries.length))]);
                             /* * * * <temp> visualize vector ** ** */
+                            /* for debugging
                             const hlinegeometry = new THREE.Geometry();
                             hlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Hvec.x, HUMANS[key].Hvec.y, HUMANS[key].Hvec.z));
                             hlinegeometry.vertices.push(new THREE.Vector3(HUMANS[key].Hvec.x * 10, HUMANS[key].Hvec.y * 10, HUMANS[key].Hvec.z * 10));
@@ -159,6 +160,7 @@
                             const vlinematerial = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 5});
                             const vline = new THREE.Line(vlinegeometry, vlinematerial);
                             HUMANS[key].sprite.add(vline);
+                            */
                             /* * * * */
                             HUMANS[key].setFlight(true);
                         }
@@ -175,7 +177,7 @@
                 quaternion.multiply(q);
             }
             function giveBirthToHuman() {
-                let humans = generateHuman(earth.children.length);
+                let humans = generateHuman(earth.children.length, Countries[Math.floor(Math.random() * Countries.length)]);
                 humans.forEach(function (human) {
                     human.sprite.scale.set(controls.scale, controls.scale, controls.scale);
 
