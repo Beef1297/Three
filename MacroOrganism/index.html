@@ -80,21 +80,23 @@
             gui.add(controls, 'numberOfObjects').listen();
             gui.add(controls, 'population').listen();
 
-            setInterval(giveBirthToHuman, 1000);
-            setInterval(checkDeath, 1000);
+            //setInterval(giveBirthToHuman, 1000);
+            //setInterval(checkDeath, 1000);
             document.getElementById("WebGL-output").appendChild(renderer.domElement);
 
-
+	    let sum = 0;
             render();
             function render () {
                 stats.update();
-                /*
+                
                 sum += clock.getDelta();
                 if (sum >= 1) {
                     console.log(sum);
+		    giveBirthToHuman();
+		    checkDeath();
                     sum = 0;
                 }
-                */
+                
 
                 earth.rotateY(controls.rotationSpeed * Math.PI / 180);
 
@@ -108,10 +110,11 @@
                            obj.scale.z = controls.scale;
                        }
                     });
-                    moveHumans();
+                    //moveHumans();
                     redraw();
                     canRedraw = false;
                 }
+		moveHumans();
                 flighting();
                 requestAnimationFrame(render);
                 renderer.render(scene, camera);
