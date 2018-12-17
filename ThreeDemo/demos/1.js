@@ -1,3 +1,6 @@
+/**
+ * three-looper is from  https://github.com/spite/looper/third-party/three.js.(Jaume Sanchez)
+ */
 import THREE from '../libs/three-looper.js';
 import {renderer, getPerspectiveCamera} from "../modules/three.js";
 import {dat} from "../libs/dat.gui.js";
