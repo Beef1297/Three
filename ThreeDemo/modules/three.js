@@ -5,7 +5,7 @@ import THREE from  '../libs/three-looper.js';
 
 function getWebGLRenderer() {
     // todo: research "antialias";
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(new THREE.Color(0x999999));
     return renderer;
