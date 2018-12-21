@@ -11,7 +11,7 @@ function getWebGLRenderer() {
     return renderer;
 }
 // fov: field of view
-function getPerspectiveCamera(fov = 45){
+function getPerspectiveCamera(fov = 45) {
     return new THREE.PerspectiveCamera(
         fov,
         window.innerWidth / window.innerHeight,
@@ -20,5 +20,16 @@ function getPerspectiveCamera(fov = 45){
     );
 }
 
+function getOrthoCamera() {
+    return new THREE.OrthographicCamera(
+        - innerWidth / 32,
+        innerWidth / 32,
+        innerHeight / 32,
+        - innerHeight / 32,
+        -200,
+        500
+    );
+}
+
 const renderer = getWebGLRenderer();
-export{ renderer, getPerspectiveCamera };
+export{ renderer, getPerspectiveCamera, getOrthoCamera };
