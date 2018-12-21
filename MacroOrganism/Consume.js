@@ -71,7 +71,7 @@ function generateHuman(population, country) {
     let num = 0;
     for (let i = 0; i < TRY; i++) {
         let possibility = Math.random();
-        const birthRate = ( TRY  * 10 + population / 2) / BIRTH_AMOUNT_PER_DAY;
+        const birthRate = ( TRY  + population / 2) / BIRTH_AMOUNT_PER_DAY;
         console.log("birthRate is: " + birthRate);
 
         if (possibility < birthRate) {

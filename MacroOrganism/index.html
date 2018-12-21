@@ -80,24 +80,24 @@
             gui.add(controls, 'numberOfObjects').listen();
             gui.add(controls, 'population').listen();
 
-            //setInterval(giveBirthToHuman, 1000);
-            //setInterval(checkDeath, 1000);
+            setInterval(giveBirthToHuman, 1000);
+            setInterval(checkDeath, 1000);
             document.getElementById("WebGL-output").appendChild(renderer.domElement);
 
-	    let sum = 0;
+	        let sum = 0;
             render();
             function render () {
                 stats.update();
                 
-                sum += clock.getDelta();
-                if (sum >= 1) {
+                //sum += clock.getDelta();
+                /*
+                if (false) {
                     console.log(sum);
-		    giveBirthToHuman();
-		    checkDeath();
+		            giveBirthToHuman();
+		            checkDeath();
                     sum = 0;
                 }
-                
-
+                */
                 earth.rotateY(controls.rotationSpeed * Math.PI / 180);
 
                 if (canRedraw) {
@@ -110,11 +110,10 @@
                            obj.scale.z = controls.scale;
                        }
                     });
-                    //moveHumans();
+                    moveHumans();
                     redraw();
                     canRedraw = false;
                 }
-		moveHumans();
                 flighting();
                 requestAnimationFrame(render);
                 renderer.render(scene, camera);
@@ -190,6 +189,7 @@
 
             function checkDeath() {
                 const deathRate = earth.children.length / DEATH_AMOUNT_PER_DAY;
+                console.log(`death rate is ` + deathRate);
                 earth.children.forEach(function (child) {
                     if (child instanceof THREE.Sprite) {
 
