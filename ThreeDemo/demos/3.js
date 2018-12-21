@@ -1,9 +1,9 @@
-import {renderer, getPerspectiveCamera} from "../modules/three.js";
+import {renderer, getPerspectiveCamera, getOrthoCamera} from "../modules/three.js";
 import THREE from "../libs/three-looper.js";
 import "../libs/SceneUtils.js"; // for use "createMultiMaterialObject", add property, SceneUtil to THREE FIXME
 import {dat} from "../libs/dat.gui.js";
 
-const camera = getPerspectiveCamera();
+const camera = getOrthoCamera();
 let scene = new THREE.Scene();
 const canvas = renderer.domElement;
 
