@@ -1,4 +1,5 @@
-import * as Module from '../demos/1.js';
+import * as Module from '../demos/2.js'; // number を変えることで実行するmoduleを変更
+// TODO: 動的に変えられるようにする．
 import {Stats} from '../libs/stats.js';
 
 function init() {

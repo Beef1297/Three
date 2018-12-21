@@ -8,7 +8,6 @@ import {dat} from "../libs/dat.gui.js";
 const canvas = renderer.domElement;
 const camera = getPerspectiveCamera();
 let scene = new THREE.Scene();
-console.log("this is 1.js global");
 let step = 0;
 let Cube;
 let Sphere;
