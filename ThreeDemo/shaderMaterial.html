@@ -33,7 +33,7 @@
 
             renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0xeeeeee);
+            renderer.setClearColor(0x000000);
             renderer.shadowMap.enabled = true;
 
             let planeGeometry = new THREE.PlaneGeometry(60, 40, 1, 1);
@@ -137,7 +137,7 @@
         void main() {
             vec3 posChanged = position;
             posChanged.x = posChanged.x * abs(sin(time * 1.0));
-            posChanged.y = posChanged.y * abs(sin(time * 1.0));
+            posChanged.y = posChanged.y * abs(cos(time * 1.0));
             posChanged.z = posChanged.z * abs(sin(time * 1.0));
             gl_Position = projectionMatrix * modelViewMatrix * vec4(posChanged, 1.0);
         }
