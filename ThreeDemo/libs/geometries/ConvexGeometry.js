@@ -16,7 +16,7 @@
  *     40           48
  *     50           107
  */
-
+import THREE from "../three-looper.js";
 THREE.ConvexGeometry = function( vertices ) {
 
 	THREE.Geometry.call( this );
