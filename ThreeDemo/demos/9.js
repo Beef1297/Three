@@ -15,6 +15,9 @@ let convexMesh;
 let latheVertices;
 let latheMesh;
 
+let tubeVertices;
+let tubeMesh;
+
 /* methods field */
 function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -44,9 +47,9 @@ function instantiateMesh(geometry, pos) {
     return mesh;
 }
 
-function generateConvexPoints() {
+function generateConvexPoints(num) {
     let points = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < num; i++) {
         points.push(
             new THREE.Vector3(
                 Math.random() * 30 - 15,
@@ -80,7 +83,7 @@ function generateLathePoints() {
     for (let i = 0; i < count; i++) {
         points.push(
             new THREE.Vector2(
-                (Math.sin(i * 0.2) + Math.cos(i * 0.3)) * height + 12,
+                (Math.cos(i * 0.2) + Math.sin(i * 0.3)) * height + 12,
                 (i - count) + count / 2,
             )
         );
@@ -111,7 +114,7 @@ function init() {
     renderer.setClearColor(0xFFD100);
     camera.position.set(0, 80, 100);
 
-    const convexPoints = generateConvexPoints();
+    const convexPoints = generateConvexPoints(20);
     convexVertices = convexPoints.group;
     scene.add(convexPoints.group);
 
@@ -129,6 +132,14 @@ function init() {
     latheVertices.position.x -= 0;
     scene.add(latheMesh);
 
+    const tubePoints = generateConvexPoints(10); //convex generator を利用
+    tubeVertices = tubePoints.group;
+    scene.add(tubeVertices);
+
+    let tubeGeometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(tubePoints.position), 40, 3, 20, false, THREE.TubeGeometry.SinusoidalTaper);
+    tubeMesh = instantiateMesh(tubeGeometry, new THREE.Vector3(50, 0, 0));
+    tubeVertices.position.x += 50;
+    scene.add(tubeMesh);
     const ambient = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambient);
 
@@ -144,6 +155,9 @@ function draw() {
 
     latheVertices.rotation.y += 0.01;
     latheMesh.rotation.y += 0.01;
+
+    tubeVertices.rotation.y += 0.01;
+    tubeMesh.rotation.y += 0.01;
 
     renderer.render(scene, camera);
 }
