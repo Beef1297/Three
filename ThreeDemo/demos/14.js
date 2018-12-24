@@ -27,7 +27,7 @@ function init() {
 
     let particleGeometry = new THREE.Geometry();
     const particleMaterial = new THREE.PointsMaterial({
-        size: 4,
+        size: 1,
         vertexColors: true,
         color: 0xffffff,
     });
@@ -45,11 +45,19 @@ function init() {
         spriteGroup.add(sprite);
     }
     */
-    for (let x = -5; x < 5; x++) {
-        for (let y = -5; y < 5; y++) {
-            const particle = new THREE.Vector3(x * 10, y * 10, 0);
-            particleGeometry.vertices.push(particle);
-            particleGeometry.colors.push(new THREE.Color(Math.random(), 1.0, 1.0));
+    for (let x = -5; x <= 5 ; x++) {
+        for (let y = -5; y <= 5; y++) {
+            for (let z = -5; z <= 5; z++) {
+                const particle = new THREE.Vector3(x * Math.random() * 10, y * Math.random() * 10, z * Math.random() * 10);
+                particleGeometry.vertices.push(particle);
+                particleGeometry.colors.push(new THREE.Color('rgba('
+                    + Math.round(Math.random() * 255) + ', '
+                    + Math.round(Math.random() * 255) + ', '
+                    + Math.round(Math.random() * 255) + ',' +
+                    + Math.random() + ')'
+                ));
+
+            }
         }
     }
 
@@ -66,13 +74,14 @@ function init() {
 }
 let theta = 0;
 function draw() {
-
-    scene.traverse((e) => {
-        if (e instanceof THREE.Points) {
-            e.position.x = 50 * Math.sin(theta);
-            e.position.y = 50 * Math.cos(theta);
+    scene.traverse((element) => {
+        if (element instanceof THREE.Points) {
+            element.traverse((e) => {
+                e.position.z = Math.random() * 100 * Math.sin(theta);
+            });
         }
     });
+
     theta = (theta + 0.01) % 360;
     //spriteGroup.rotation.x += 0.01;
     //spriteGroup.rotation.y += 0.01;
