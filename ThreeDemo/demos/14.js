@@ -30,6 +30,8 @@ function init() {
         size: Math.random() / 10,
         vertexColors: true,
         color: 0xffffff,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
     });
 
     /*
