@@ -27,7 +27,7 @@ function init() {
 
     let particleGeometry = new THREE.Geometry();
     const particleMaterial = new THREE.PointsMaterial({
-        size: 0.1,
+        size: Math.random() / 10,
         vertexColors: true,
         color: 0xffffff,
     });
@@ -45,16 +45,15 @@ function init() {
         spriteGroup.add(sprite);
     }
     */
-    for (let x = -20; x <= 20 ; x++) {
-        for (let y = -20; y <= 20; y++) {
-            for (let z = -20; z <= 20; z++) {
+    for (let x = -50; x <= 50 ; x++) {
+        for (let y = -50; y <= 50; y++) {
+            for (let z = -50; z <= 50; z++) {
                 const particle = new THREE.Vector3(x * Math.random() * 5, y * Math.random() * 5, z * Math.random() * 5);
                 particleGeometry.vertices.push(particle);
-                particleGeometry.colors.push(new THREE.Color('rgba('
+                particleGeometry.colors.push(new THREE.Color('rgb('
                     + Math.round(Math.random() * 255) + ', '
                     + Math.round(Math.random() * 255) + ', '
-                    + Math.round(Math.random() * 255) + ',' +
-                    + Math.random() + ')'
+                    + Math.round(Math.random() * 255) + ')'
                 ));
 
             }
