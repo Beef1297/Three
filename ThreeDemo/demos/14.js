@@ -17,13 +17,45 @@ function onResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+function createParticles(size, transparent, opacity, vertexColors, sizeAttenuation, color) {
+    const geom = new THREE.Geometry();
+    let material = new THREE.PointsMaterial({
+        size: size,
+        transparent: transparent,
+        opacity: opacity,
+        vertexColors: vertexColors,
+        sizeAttenuation: sizeAttenuation,
+        color: color,
+    });
+
+    const range = 500;
+    for (let i = 0; i < range; i++) {
+        const particle = new THREE.Vector3(
+            Math.random() * range - range / 2,
+            Math.random() * range - range / 2,
+            Math.random() * range - range / 2,
+        );
+        geom.vertices.push(particle);
+        const color = new THREE.Color(0x0000ff);
+        color.setHSL(
+            color.getHSL().h,
+            color.getHSL().s,
+            color.getHSL().l * Math.random(),
+        );
+        geom.colors.push(color);
+    }
+    let particles = new THREE.Points(geom, material);
+    particles.name = "particles";
+    return particles;
+}
+
 function init() {
 
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.setClearColor(0x000000);
 
-    camera.position.set(0, 0, 100);
+    camera.position.set(0, 0, 500);
 
     let particleGeometry = new THREE.Geometry();
     const particleMaterial = new THREE.PointsMaterial({
@@ -47,6 +79,7 @@ function init() {
         spriteGroup.add(sprite);
     }
     */
+    /*
     for (let x = -50; x <= 50 ; x++) {
         for (let y = -50; y <= 50; y++) {
             for (let z = -50; z <= 50; z++) {
@@ -61,11 +94,20 @@ function init() {
             }
         }
     }
+    */
 
-    let cloud = new THREE.Points(particleGeometry, particleMaterial);
+
+    let cloud = createParticles(
+        10,
+        true,
+        1.0,
+        THREE.VertexColors,
+        1.0,
+        0xffffff,
+    );
+    //new THREE.Points(particleGeometry, particleMaterial);
     scene.add(cloud);
 
-    scene.add(spriteGroup);
 
     camera.lookAt(scene.position);
     const ambient = new THREE.AmbientLight(0xffffff, 1);
@@ -73,8 +115,9 @@ function init() {
 
     window.addEventListener(`resize`, onResize, false);
 }
-let theta = 0;
+
 function draw() {
+    /*
     scene.traverse((element) => {
         if (element instanceof THREE.Points) {
             element.traverse((e) => {
@@ -83,8 +126,8 @@ function draw() {
             });
         }
     });
+    */
 
-    theta = (theta + 0.01) % 360;
     //spriteGroup.rotation.x += 0.01;
     //spriteGroup.rotation.y += 0.01;
 
