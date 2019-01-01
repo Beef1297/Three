@@ -1,4 +1,4 @@
-const width = 500;
-const height = 500;
+const width = 100;
+const height = 100;
 
 export{width, height};
