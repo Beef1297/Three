@@ -102,7 +102,7 @@ function init() {
         true,
         1.0,
         THREE.VertexColors,
-        1.0,
+        true,
         0xffffff,
     );
     //new THREE.Points(particleGeometry, particleMaterial);
