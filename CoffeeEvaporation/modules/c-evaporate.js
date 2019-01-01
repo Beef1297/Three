@@ -27,6 +27,11 @@ function init() {
         stats.domElement.style.position = 'absolute';
         stats.domElement.style.left= '0px';
         stats.domElement.style.top = '0px';
+
+        document.getElementById("Stats-Output").appendChild(
+            stats.domElement
+        );
+
         return stats;
     }
 }
