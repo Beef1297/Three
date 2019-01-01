@@ -41,7 +41,7 @@ class ZigZagLine {
 
     getMaterial() {
         const material = new THREE.LineBasicMaterial({
-            color: 0xff0000,
+            color: 0xff0000 * Math.random(),
             linewidth: 1,
             blending: THREE.AdditiveBlending,
         });
@@ -50,13 +50,14 @@ class ZigZagLine {
     }
 
     next() {
-        const x = Math.round(Math.random());
+        const x = Math.round(Math.random()) * 1;
         let pos = this.line.geometry.attributes.position.array;
         this.position.x = pos[this.index] = pos[this.index - 3] + x;
         this.index++;
         this.position.y = pos[this.index] = pos[this.index - 3] + (1 - x);
         this.index++;
-        this.position.z = pos[this.index++] = 0;
+        this.position.z = pos[this.index] = pos[this.index - 3] + Math.random();
+        this.index++;
         this.count++;
         this.lineGeometry.setDrawRange(0, this.count);
         this.line.geometry.attributes.position.needsUpdate = true;
@@ -71,7 +72,7 @@ class ZigZagLine {
     }
 
     finished() {
-        return (this.position.x >= Const.width / 2 || this.position.y >= Const.height / 2);
+        return (this.position.x >= Const.width / 2 && this.position.y >= Const.height / 2);
     }
 
     reset() {

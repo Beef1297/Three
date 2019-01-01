@@ -18,9 +18,23 @@ function init() {
 
 
     lines.push(
-        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, 0),
-        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, 0),
-        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, 0),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
+        new Line.ZigZagLine(- Const.width / 2, - Const.height / 2, Const.depth / 2),
     );
     lines.forEach((l) => {
         scene.add(l.line);
@@ -40,6 +54,7 @@ function init() {
             if (l.finished()) {
                 l.reset();
             }
+            l.line.rotation.y += (Math.PI / 180);
         });
         renderer.render(scene, camera);
         requestAnimationFrame(render);
