@@ -7,16 +7,19 @@ function initStack() {
     stack.push(new THREE.Vector3(0, 0, 0));
     return stack;
 }
+const MAX_POINTS = 500;
 
 class ZigZagLine {
 
-    constructor(x, y, z) {
+    constructor(x, y, z, sign_) {
         this.position = new THREE.Vector3(x, y, z);
+        this.init = new THREE.Vector3(x, y, z);
         this.lineGeometry = this.initGeometry();
         this.lineMaterial = this.getMaterial();
         this.line = this.initLine();
         this.count = 0;
         this.index = 3;
+        this.sign = sign_;
     }
 
     initLine() {
@@ -30,19 +33,18 @@ class ZigZagLine {
     }
 
     initGeometry() {
-        const MAX_POINTS = 500;
         let lineBufferGeometry = new THREE.BufferGeometry();
-        let positions = new Float32Array(MAX_POINTS * 3);
+        let positions = new Int16Array(MAX_POINTS * 3);
         lineBufferGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
-        lineBufferGeometry.setDrawRange(0, this.count);
+        lineBufferGeometry.setDrawRange(0, 1);
 
         return lineBufferGeometry;
     }
 
     getMaterial() {
         const material = new THREE.LineBasicMaterial({
-            color: 0xff0000 * Math.random(),
-            linewidth: 1,
+            color: 0xff0000,
+            linewidth: 0.1,
             blending: THREE.AdditiveBlending,
         });
 
@@ -50,16 +52,18 @@ class ZigZagLine {
     }
 
     next() {
-        const x = Math.round(Math.random()) * 1;
+        let step = 5;
+        const x = (((Math.random() * 100) >= 80 * Math.random()) ? 1 : 0) * step;
         let pos = this.line.geometry.attributes.position.array;
         this.position.x = pos[this.index] = pos[this.index - 3] + x;
         this.index++;
-        this.position.y = pos[this.index] = pos[this.index - 3] + (1 - x);
+        this.position.y = pos[this.index] = pos[this.index - 3] + (step - x) * this.sign;
         this.index++;
-        this.position.z = pos[this.index] = pos[this.index - 3] + Math.random();
+        this.position.z = pos[this.index] =  0;//100 * Math.sin(x * Math.PI / 90);
         this.index++;
         this.count++;
-        this.lineGeometry.setDrawRange(0, this.count);
+        const range = 25;
+        this.lineGeometry.setDrawRange(this.count - range, range);
         this.line.geometry.attributes.position.needsUpdate = true;
     }
 
@@ -72,10 +76,21 @@ class ZigZagLine {
     }
 
     finished() {
-        return (this.position.x >= Const.width / 2 && this.position.y >= Const.height / 2);
+        let result = false;
+        if (this.sign === 1) {
+            result = (this.position.x >= Const.width / 2 && this.position.y >= Const.height / 2);
+        } else if (this.sign === -1) {
+            result = (this.position.x >= Const.width / 2 && this.position.y <= -Const.height / 2);
+        }
+        return result;
     }
 
     reset() {
+        // let positions = new Int16Array(MAX_POINTS * 3);
+        // positions[0] = this.init.x;
+        // positions[1] = this.init.y;
+        // positions[2] = this.init.z;
+        // this.line.geometry.attributes.position.array = positions;
         this.count = 0;
         this.index = 3;
     }

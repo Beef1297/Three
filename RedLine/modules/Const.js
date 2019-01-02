@@ -1,5 +1,5 @@
-const width = 100;
-const height = 100;
-const depth = 10;
+const width = 200;
+const height = 200;
+const depth = 0;
 
 export{width, height, depth};
