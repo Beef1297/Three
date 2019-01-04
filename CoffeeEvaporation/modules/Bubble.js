@@ -3,13 +3,12 @@ import THREE from "../libs/three-looper.js";
 export default class Bubbles {
 
     constructor(amount_) {
-        this.particleSize = 0.2;
-        this.cloudSize = 10;
+        this.particleSize = 0.5;
+        this.cloudSize = 20;
         this.color = 0xffffff;
         this.amount = amount_;
         this.bubbles = this.draw();
-
-        this._currentLerp = 0;
+        this.velocity = new THREE.Vector3();
     }
 
     draw() {
@@ -39,22 +38,22 @@ export default class Bubbles {
         return evaporation;
     }
 
-    update(goal) {
-        this.bubbles.geometry.vertices.forEach((bubble) => {
-           this._addForce(bubble, goal);
+    update() {
+        this.bubbles.geometry.vertices.forEach( (particle) => {
+            if(this.velocity.x > 0 || this.velocity.z > 0) {
+                particle.x += this.velocity.x;
+                particle.z += this.velocity.z;
+            }
         });
-        this._currentLerp += 0.0001;
-        console.log(this._currentLerp);
+        this.velocity.x -= 0.01;
+        this.velocity.z -= 0.01;
+        this.bubbles.geometry.verticesNeedUpdate = true;
     }
 
-    _addForce(bubble, goal) {
-        // const direction = new THREE.Vector3(1, 0, 1).normalize();
-        // const force = direction.clone().multiplyScalar(10);
-        // const goal = bubble.position.clone().add(force);
-        // 今の所加速度をちゃんと持たせるのはちゃんと実装しないといけないので，lerp で擬似的に実装
-        let v = new THREE.Vector3(bubble.x, bubble.y, bubble.z);
-        v.lerp(goal, this._currentLerp);
-        bubble.set(v.x, v.y, v.z);
+    addForce(target) {
+        this.velocity.x = Math.random();
+        this.velocity.y = 0;
+        this.velocity.z = Math.random();
     }
 
 }

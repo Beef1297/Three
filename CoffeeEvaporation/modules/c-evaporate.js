@@ -6,7 +6,11 @@ import Bubbles from "./Bubble.js";
 let scene = new THREE.Scene();
 let camera = getPerspectiveCamera(45);
 const canvas = renderer.domElement;
+let bubbles = new Bubbles(10000);
 
+window.addEventListener('resize', onResize);
+window.addEventListener('load', init);
+window.addEventListener('mousedown', onMouseDown, false);
 function init() {
 
     camera.position.set(0, 100, 0);
@@ -16,7 +20,6 @@ function init() {
 
     let stats = initStats();
 
-    let bubbles = new Bubbles(10000);
     scene.add(bubbles.bubbles);
 
     const ambient = new THREE.AmbientLight(0xffffff);
@@ -24,18 +27,21 @@ function init() {
 
     document.getElementById('WebGL-Output').appendChild(canvas);
 
-    const goal = new THREE.Vector3(100, 0, 100);
     render();
 
 
     function render() {
         stats.update();
 
-        bubbles.update(goal);
-
+        bubbles.update();
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }
+
+    function update() {
+        bubbles.update();
+    }
+
     function initStats() {
         const stats = new Stats();
         stats.setMode(0);
@@ -50,11 +56,21 @@ function init() {
         return stats;
     }
 }
+
+function onMouseDown(event) {
+    const mousePos = new THREE.Vector3(
+        Math.random() * 100,
+        0,
+        Math.random() * 100,
+    );
+    // TODO: mouse座標を変換してちゃんと取得する.
+    console.log("mouse down");
+    bubbles.addForce(mousePos);
+}
+
 function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-window.addEventListener('resize', onResize);
-window.addEventListener('load', init);
