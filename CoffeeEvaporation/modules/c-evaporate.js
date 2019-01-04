@@ -6,7 +6,7 @@ import Bubbles from "./Bubble.js";
 let scene = new THREE.Scene();
 let camera = getPerspectiveCamera(45);
 const canvas = renderer.domElement;
-let bubbles = new Bubbles(10000);
+let bubbles = new Bubbles(100000);
 
 window.addEventListener('resize', onResize);
 window.addEventListener('load', init);
@@ -19,6 +19,8 @@ function init() {
     renderer.setClearColor(0x4E3524); // Pantone 2322C
 
     let stats = initStats();
+    console.log(new THREE.Vector3(1, 0, 1).unproject(camera));
+    console.log(new THREE.Vector3(-1, 0, -1).unproject(camera));
 
     scene.add(bubbles.bubbles);
 
