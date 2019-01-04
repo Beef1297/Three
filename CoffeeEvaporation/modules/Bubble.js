@@ -3,12 +3,12 @@ import THREE from "../libs/three-looper.js";
 export default class Bubbles {
 
     constructor(amount_) {
-        this.particleSize = 0.5;
-        this.cloudSize = 20;
+        this.particleSize = 0.2;
+        this.cloudSize = 5;
         this.color = 0xffffff;
         this.amount = amount_;
+        this.velocities = [];
         this.bubbles = this.draw();
-        this.velocity = new THREE.Vector3();
     }
 
     draw() {
@@ -30,6 +30,11 @@ export default class Bubbles {
                 Math.random() * this.cloudSize * Math.sin(theta),
             );
             bubbleGeometry.vertices.push(bubble);
+            this.velocities.push(new THREE.Vector3(
+                Math.random(),
+                0,
+                Math.random(),
+            ));
             bubbleGeometry.colors.push(new THREE.Color(this.color));
         }
         let evaporation =  new THREE.Points(bubbleGeometry, bubbleMaterial);
@@ -39,21 +44,27 @@ export default class Bubbles {
     }
 
     update() {
-        this.bubbles.geometry.vertices.forEach( (particle) => {
-            if(this.velocity.x > 0 || this.velocity.z > 0) {
-                particle.x += this.velocity.x;
-                particle.z += this.velocity.z;
+        let particles = this.bubbles.geometry.vertices;
+        for (let i = 0; i < particles.length; i++) {
+            if (this.velocities[i].x > 0 || this.velocities[i].z > 0) {
+                particles[i].x += this.velocities[i].x;
+                particles[i].z += this.velocities[i].z;
+                this.velocities[i].x -= 0.01;
+                this.velocities[i].z -= 0.01;
             }
-        });
-        this.velocity.x -= 0.01;
-        this.velocity.z -= 0.01;
+        }
+
         this.bubbles.geometry.verticesNeedUpdate = true;
     }
 
     addForce(target) {
-        this.velocity.x = Math.random();
-        this.velocity.y = 0;
-        this.velocity.z = Math.random();
+        this.velocities.forEach((velocity) => {
+            if (velocity.x <= 0 && velocity.z <= 0) {
+                velocity.x = Math.random();
+                velocity.y = 0;
+                velocity.z = Math.random();
+            }
+        });
     }
 
 }
